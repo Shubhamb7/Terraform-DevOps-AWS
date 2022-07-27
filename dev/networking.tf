@@ -24,7 +24,7 @@ resource "aws_subnet" "public_subnet" {
 resource "aws_subnet" "private_subnet" {
   count = length(var.subnet_availability_zones)
   vpc_id     = aws_vpc.vpc.id
-  cidr_block = var.private_subnet_cidr
+  cidr_block = element(var.private_subnet_cidr,count.index)
   availability_zone = element(var.subnet_availability_zones,count.index)
   map_public_ip_on_launch = false
 
@@ -46,7 +46,7 @@ resource "aws_eip" "ngw_eip" {
 }
 
 resource "aws_nat_gateway" "ngw" {
-  subnet_id = aws_subnet.public_subnet.id
+  subnet_id = aws_subnet.public_subnet[0].id
   allocation_id = aws_eip.ngw_eip.id
 
   tags = {
@@ -80,21 +80,21 @@ resource "aws_route_table" "private_rt" {
   }
 }
 
-resource "aws_route_table_association" "public_rt_association" {
+resource "aws_route_table_association" "public_rt_association1" {
   subnet_id      = aws_subnet.public_subnet[0].id
   route_table_id = aws_route_table.public_rt.id
 }
-resource "aws_route_table_association" "public_rt_association" {
+resource "aws_route_table_association" "public_rt_association2" {
   subnet_id      = aws_subnet.public_subnet[1].id
   route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_route_table_association" "private_rt_association" {
+resource "aws_route_table_association" "private_rt_association1" {
   subnet_id      = aws_subnet.private_subnet[0].id
   route_table_id = aws_route_table.private_rt.id
 }
 
-resource "aws_route_table_association" "private_rt_association" {
+resource "aws_route_table_association" "private_rt_association2" {
   subnet_id      = aws_subnet.private_subnet[1].id
   route_table_id = aws_route_table.private_rt.id
 }
