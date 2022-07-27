@@ -17,7 +17,7 @@ variable "public_subnet_cidr" {
     type = list
 }
 variable "private_subnet_cidr" {
-    type = string
+    type = list
 }
 variable "subnet_availability_zones" {
     type = list
