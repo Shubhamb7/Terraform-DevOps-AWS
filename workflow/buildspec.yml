@@ -4,7 +4,7 @@ env:
   variables: 
     TERRAFORM_VERSION: "1.2.6"
     TF_COMMAND: "apply"
-    PROFILE_TAG: "dev"
+    PROFILE_TAG: "dev.conf"
   parameter-store:
     AWS_ACCESS_KEY_ID: "/Codebuild/MY_AWS_ACCESS_KEY_ID"
     AWS_SCERET_ACCESS_KEY: "/Codebuild/MY_AWS_SECRET_KEY_ID"
@@ -29,7 +29,7 @@ phases:
       - cd "$CODEBUILD_SRC_DIR/infra-manifest"
       - ls -lrt
       - terraform --version
-      - terraform init -backend-config="$PROFILE_TAG".conf
+      - terraform init -backend-config=$PROFILE_TAG
       - terraform validate
       - terraform plan -lock=false
       - terraform $TF_COMMAND --auto-approve
