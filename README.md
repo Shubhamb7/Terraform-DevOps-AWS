@@ -1,2 +1,2 @@
 # Terraform-DevOps-AWS
-Testing out IAC &amp; DevOps on AWS with Terraform
+Testing out Terraform IAC on AWS with AWS CodePipeline
