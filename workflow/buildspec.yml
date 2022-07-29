@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables: 
     TERRAFORM_VERSION: "1.2.6"
-    TF_COMMAND: "destroy"
+    TF_COMMAND: "apply"
     PROFILE_TAG: "dev.conf"
   parameter-store:
     AWS_ACCESS_KEY_ID: "/Codebuild/MY_AWS_ACCESS_KEY_ID"
@@ -23,15 +23,16 @@ phases:
     on-failure: ABORT
     commands:
       - echo terraform execution started `date`
-  build:
-    on-failure: ABORT
-    commands:
       - cd "$CODEBUILD_SRC_DIR/infra-manifest"
       - ls -lrt
       - terraform --version
       - terraform init -backend-config=$PROFILE_TAG
       - terraform validate
       - terraform plan -lock=false
+      
+  build:
+    on-failure: ABORT
+    commands:
       - terraform $TF_COMMAND --auto-approve
   post_build:
     on-failure: CONTINUE
