@@ -26,15 +26,15 @@ phases:
       - ls -lrt
       - terraform --version
       - echo terraform execution started `date`
+      - terraform init -backend-config=$PROFILE_TAG
+      - terraform validate
+      - terraform plan -lock=false
   build:
     on-failure: ABORT
     commands:
       - cd "$CODEBUILD_SRC_DIR/infra-manifest"
-      - terraform init -backend-config=$PROFILE_TAG
-      - terraform validate
-      - terraform plan -lock=false
       - terraform $TF_COMMAND --auto-approve
   post_build:
     on-failure: CONTINUE
-    commands: 
+    commands:
       - echo terraform execution completed `date`
