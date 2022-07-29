@@ -1,0 +1,40 @@
+version: 0.2
+
+env:
+  variables: 
+    TERRAFORM_VERSION: "1.2.6"
+    TF_COMMAND: "apply"
+    PROFILE_TAG: "dev.conf"
+  parameter-store:
+    AWS_ACCESS_KEY_ID: "/Codebuild/MY_AWS_ACCESS_KEY_ID"
+    AWS_SCERET_ACCESS_KEY: "/Codebuild/MY_AWS_SECRET_KEY_ID"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.x
+    on-failure: ABORT
+    commands: 
+      - tf_version=$TERRAFORM_VERSION
+      - wget https://releases.hashicorp.com/terraform/"$TERRAFORM_VERSION"/terraform_"$TERRAFORM_VERSION"_linux_amd64.zip
+      - unzip terraform_"$TERRAFORM_VERSION"_linux_amd64.zip
+      - mv terraform /usr/local/bin/
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - cd "$CODEBUILD_SRC_DIR/infra-manifest"
+      - ls -lrt
+      - terraform --version
+      - echo terraform execution started `date`
+      - terraform init -backend-config=$PROFILE_TAG
+      - terraform validate
+      - terraform plan -lock=false
+  build:
+    on-failure: ABORT
+    commands:
+      - cd "$CODEBUILD_SRC_DIR/infra-manifest"
+      - terraform $TF_COMMAND --auto-approve
+  post_build:
+    on-failure: CONTINUE
+    commands:
+      - echo terraform execution completed `date`
