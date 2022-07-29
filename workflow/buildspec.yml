@@ -22,17 +22,17 @@ phases:
   pre_build:
     on-failure: ABORT
     commands:
-      - echo terraform execution started `date`
       - cd "$CODEBUILD_SRC_DIR/infra-manifest"
       - ls -lrt
       - terraform --version
-      - terraform init -backend-config=$PROFILE_TAG
-      - terraform validate
-      - terraform plan -lock=false
-      
+      - echo terraform execution started `date`
   build:
     on-failure: ABORT
     commands:
+      - cd "$CODEBUILD_SRC_DIR/infra-manifest"
+      - terraform init -backend-config=$PROFILE_TAG
+      - terraform validate
+      - terraform plan -lock=false
       - terraform $TF_COMMAND --auto-approve
   post_build:
     on-failure: CONTINUE
